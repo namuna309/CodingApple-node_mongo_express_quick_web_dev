@@ -26,7 +26,7 @@ app.get('/about', (req, res) => {
 const { MongoClient } = require('mongodb')
 
 let db
-const url = 'mongodb+srv://nyah309:ubN6XJZxE-2Ph.K@cluster0.emzshpb.mongodb.net/?retryWrites=true&w=majority'
+const url = 'mongodb+srv://nyah309:password@cluster0.emzshpb.mongodb.net/?retryWrites=true&w=majority'
 new MongoClient(url).connect().then((client)=>{
   console.log('DB연결성공')
   db = client.db('forum')
