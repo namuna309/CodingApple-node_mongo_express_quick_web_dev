@@ -12,9 +12,7 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 })
 
-app.get('/news', (req, res) => {
-  res.send('오늘 비옴');
-}) 
+
 
 app.get('/shop', (req, res) => {
     res.send('쇼핑페이지임');
@@ -24,3 +22,25 @@ app.get('/shop', (req, res) => {
 app.get('/about', (req, res) => {
     res.sendFile(__dirname + '/about.html');
 })
+
+const { MongoClient } = require('mongodb')
+
+let db
+const url = 'mongodb+srv://nyah309:ubN6XJZxE-2Ph.K@cluster0.emzshpb.mongodb.net/?retryWrites=true&w=majority'
+new MongoClient(url).connect().then((client)=>{
+  console.log('DB연결성공')
+  db = client.db('forum')
+}).catch((err)=>{
+  console.log(err)
+})
+
+app.get('/news', (req, res) => {
+    db.collection('post').insertOne({title: '어쩌구'});
+    res.send('오늘 비옴');
+  }) 
+
+app.get('/list', async (req, res) => {
+    let result = await db.collection('post').find().toArray();
+    console.log(result[0]);
+    res.send('DB에 있던 게시물');
+  }) 
