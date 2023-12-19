@@ -6,6 +6,8 @@ db_key = process.env.MONGODB_PW;
 // settings
 app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
+app.use(express.json())
+app.use(express.urlencoded({extended:true})) 
 
 
 app.listen(8080, () => {
@@ -52,3 +54,18 @@ app.get('/list', async (req, res) => {
 app.get('/time', (req, res) => {
   res.render('time.ejs', {time: new Date()});
 })
+
+app.get('/write', (req, res) => {
+  res.render('write.ejs');
+})
+
+app.post('/add', async (req, res)=>{
+  let data = req.body;
+  db.collection('post').insertOne({ title: data.title, content: data.content});
+  let result = await db.collection('post').find().toArray();
+  if ((result[result.length - 1].title == data.title) && (result[result.length - 1].content == data.content)) {
+    console.log('입력 성공');
+  } else {
+    console.log('입력 실패, 재시도 필요');
+  }
+}) 
