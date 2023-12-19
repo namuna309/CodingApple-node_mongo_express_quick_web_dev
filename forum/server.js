@@ -61,11 +61,23 @@ app.get('/write', (req, res) => {
 
 app.post('/add', async (req, res)=>{
   let data = req.body;
-  db.collection('post').insertOne({ title: data.title, content: data.content});
-  let result = await db.collection('post').find().toArray();
-  if ((result[result.length - 1].title == data.title) && (result[result.length - 1].content == data.content)) {
-    console.log('입력 성공');
+
+  if (data.title == '') {
+    res.send('제목?');
+  } else if (data.content == '') {
+    res.send('내용?');
   } else {
-    console.log('입력 실패, 재시도 필요');
+    try {
+      await db.collection('post').insertOne({ title: data.title, content: data.content});
+      await db.collection('post').find().toArray();
+      console.log('입력 성공');
+      res.redirect('/list');
+    } catch(e) {
+      console.log('db 입력 실패');
+      res.status(500).send(e);
+    }
+   
   }
+
+  
 }) 
