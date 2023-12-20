@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const { ObjectId, MongoClient } = require('mongodb') 
 require('dotenv').config();
 db_key = process.env.MONGODB_PW;
 
@@ -29,8 +30,6 @@ app.get('/shop', (req, res) => {
 app.get('/about', (req, res) => {
   res.sendFile(__dirname + '/about.html');
 })
-
-const { MongoClient } = require('mongodb')
 
 let db
 const url = `mongodb+srv://nyah309:${db_key}@cluster0.emzshpb.mongodb.net/?retryWrites=true&w=majority`
@@ -78,6 +77,10 @@ app.post('/add', async (req, res)=>{
     }
    
   }
-
-  
 }) 
+
+app.get('/detail/:id', async (req, res) => {
+  let objId = req.params;
+  let result = await db.collection('post').findOne({_id: new ObjectId(objId)})
+  res.render('detail.ejs', {post: result});
+})
