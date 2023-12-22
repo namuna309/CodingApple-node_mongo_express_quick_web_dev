@@ -101,16 +101,26 @@ app.get('/edit/:id', async (req, res) => {
 
 })
 
-app.post('/modify/:id', async (req, res) => {
-  let objId = req.params;
+// app.post('/modify/:id', async (req, res) => {
+//   let objId = req.params;
+//   let data = req.body;
+//   try {
+//     await db.collection('post').updateOne({_id: new ObjectId(objId)}, {$set: { title : data.title, content: data.content }});
+//     console.log('수정 성공');
+//     res.redirect(`/detail/${objId.id}`);
+//   } catch (err) {
+//     console.log('수정 실패');
+//     res.status(400).send(err);
+//   }
+// })
+app.post('/edit', async (req, res)=>{
   let data = req.body;
   try {
-    await db.collection('post').updateOne({_id: new ObjectId(objId)}, {$set: { title : data.title, content: data.content }});
+    await db.collection('post').updateOne({_id: new ObjectId(data.id)}, {$set: { title : data.title, content: data.content }});
     console.log('수정 성공');
-    res.redirect(`/detail/${objId.id}`);
+    res.redirect(`/detail/${data.id}`);
   } catch (err) {
     console.log('수정 실패');
     res.status(400).send(err);
   }
-  
 })
