@@ -1,10 +1,13 @@
 const express = require('express')
 const app = express()
 const { ObjectId, MongoClient } = require('mongodb') 
+const methodOverride = require('method-override');
+
 require('dotenv').config();
 db_key = process.env.MONGODB_PW;
 
 // settings
+app.use(methodOverride('_method'));
 app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
 app.use(express.json())
@@ -113,7 +116,7 @@ app.get('/edit/:id', async (req, res) => {
 //     res.status(400).send(err);
 //   }
 // })
-app.post('/edit', async (req, res)=>{
+app.put('/edit', async (req, res)=>{
   let data = req.body;
   try {
     await db.collection('post').updateOne({_id: new ObjectId(data.id)}, {$set: { title : data.title, content: data.content }});
