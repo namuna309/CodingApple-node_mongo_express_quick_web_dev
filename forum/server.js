@@ -80,7 +80,37 @@ app.post('/add', async (req, res)=>{
 }) 
 
 app.get('/detail/:id', async (req, res) => {
+  try {
+    let objId = req.params;
+    let result = await db.collection('post').findOne({_id: new ObjectId(objId)})
+    if (result == null) {
+      응답.status(400).send('그런 글 없음')
+    } else {
+      res.render('detail.ejs', {post: result});
+    }
+  } catch(e) {
+    console.log(e);
+    res.status(400).send('이상한 url 입력함');
+  }
+})
+
+app.get('/edit/:id', async (req, res) => {
   let objId = req.params;
-  let result = await db.collection('post').findOne({_id: new ObjectId(objId)})
-  res.render('detail.ejs', {post: result});
+  let result = await db.collection('post').findOne({_id: new ObjectId(objId)});
+  res.render('edit.ejs', {post: result});
+
+})
+
+app.post('/modify/:id', async (req, res) => {
+  let objId = req.params;
+  let data = req.body;
+  try {
+    await db.collection('post').updateOne({_id: new ObjectId(objId)}, {$set: { title : data.title, content: data.content }});
+    console.log('수정 성공');
+    res.redirect(`/detail/${objId.id}`);
+  } catch (err) {
+    console.log('수정 실패');
+    res.status(400).send(err);
+  }
+  
 })
