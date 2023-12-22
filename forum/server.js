@@ -127,3 +127,18 @@ app.put('/edit', async (req, res)=>{
     res.status(400).send(err);
   }
 })
+
+app.post('/abc', async (req, res) => {
+  console.log(req.body);
+})
+
+app.post('/delete', async(req, res) => {
+  let post = req.body;
+  try{
+    await db.collection('post').deleteOne({_id: new ObjectId(req.body._id)});
+    res.redirect('/list');
+  } catch(err) {
+    console.log(err);
+  }
+  
+})
