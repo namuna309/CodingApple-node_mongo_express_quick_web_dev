@@ -137,7 +137,8 @@ app.delete('/delete', async(req, res) => {
   console.log(post);
   try{
     await db.collection('post').deleteOne({_id: new ObjectId(post)});
-    res.redirect('/list');
+    console.log('삭제 완료')
+    res.send('삭제 완료');
   } catch(err) {
     console.log(err);
   }
