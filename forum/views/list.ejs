@@ -14,18 +14,14 @@
                 <a href="/detail/<%= post[i]._id %>">
                     <h4><%= post[i].title %>
                         <a href="/edit/<%= post[i]._id %>">✏️</a>
-                        <span class="delete">🗑️</span></h4>
+                        <span class="delete" data-id="<%= post[i]._id %>">🗑️</span></h4>
                     </a>
                 <p><%= post[i].content %></p>
               </div>
               <script>
-                document.querySelectorAll('.delete')[parseInt('<%= i %>')].addEventListener('click', function() {
-                        fetch('/delete', {
-                            method : 'POST',
-                            headers : {
-                                'content-Type' : 'application/json'
-                            },
-                            body : JSON.stringify({ _id : '<%= post[i]._id %>'})
+                document.querySelectorAll('.delete')[parseInt('<%= i %>')].addEventListener('click', function(e) {
+                        fetch('/delete?id=' + e.target.dataset.id, {
+                            method : 'DELETE',
                         })
                     })
         

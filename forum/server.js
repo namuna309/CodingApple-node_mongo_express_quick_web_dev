@@ -132,10 +132,11 @@ app.post('/abc', async (req, res) => {
   console.log(req.body);
 })
 
-app.post('/delete', async(req, res) => {
-  let post = req.body;
+app.delete('/delete', async(req, res) => {
+  let post = req.query.id;
+  console.log(post);
   try{
-    await db.collection('post').deleteOne({_id: new ObjectId(req.body._id)});
+    await db.collection('post').deleteOne({_id: new ObjectId(post)});
     res.redirect('/list');
   } catch(err) {
     console.log(err);
