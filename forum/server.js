@@ -12,7 +12,6 @@ const MongoStore = require('connect-mongo')
 const { S3Client } = require('@aws-sdk/client-s3')
 const multer = require('multer')
 const multerS3 = require('multer-s3')
-require('dotenv').config();
 
 
 require('dotenv').config();
@@ -87,6 +86,8 @@ app.listen(8080, () => {
   console.log('http://localhost:8080 에서 서버 실행중')
 })
 
+app.use('/shop', require('./routes/shop.js') );
+
 app.get('/', (req, res) => {
   // res.send('반갑다');
   res.sendFile(__dirname + '/index.html');
@@ -103,9 +104,10 @@ app.get('/about', (req, res) => {
   res.sendFile(__dirname + '/about.html');
 })
 
+let connectDB = require('./routes/database')
 let db
-const url = `mongodb+srv://nyah309:${db_key}@cluster0.emzshpb.mongodb.net/?retryWrites=true&w=majority`
-new MongoClient(url).connect().then((client) => {
+
+connectDB.then((client) => {
   console.log('DB연결성공')
   db = client.db('forum')
 }).catch((err) => {
@@ -274,3 +276,5 @@ app.post('/register', async (req, res) => {
   })
   res.redirect('/')
 })
+
+
