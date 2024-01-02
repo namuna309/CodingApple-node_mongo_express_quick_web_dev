@@ -7,6 +7,7 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local')
 const bcrypt = require('bcrypt') 
 const MongoStore = require('connect-mongo')
+require('dotenv').config();
 
 
 require('dotenv').config();
@@ -91,6 +92,14 @@ app.get('/news', (req, res) => {
   db.collection('post').insertOne({ title: '어쩌구' });
   res.send('오늘 비옴');
 })
+
+function logTime(res, req, next) {
+  let curTime = new Date().toString();
+  console.log(curTime);
+  next();
+}
+
+app.use('/list', logTime);
 
 app.get('/list', async (req, res) => {
   let result = await db.collection('post').find().limit(5).toArray();  res.render('list.ejs', { post: result });
@@ -200,6 +209,16 @@ app.get('/list/next/:page', async (req, res) => {
 })
 
 // 로그인
+function isBlank(req, res, next) {
+  let id = req.body.username;
+  let pw = req.body.password;
+  if((id == '') || (pw == '')) {
+    res.send('그러지마세요');
+  } else {
+    next();
+  }
+}
+
 app.get('/login', (req, res)=>{
   res.render('login.ejs')
 }) 
