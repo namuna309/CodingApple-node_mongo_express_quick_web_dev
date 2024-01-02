@@ -278,3 +278,8 @@ app.post('/register', async (req, res) => {
 })
 
 
+app.get('/search', async (req, res) => {
+  let reqData = req.query.val;
+  let result = await db.collection('post').find( {title : {$regex: reqData} } ).toArray();
+  res.render('search.ejs', { post: result});
+})
