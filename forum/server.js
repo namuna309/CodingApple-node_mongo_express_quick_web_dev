@@ -2,11 +2,16 @@ const express = require('express')
 const app = express()
 const { ObjectId, MongoClient } = require('mongodb') 
 const methodOverride = require('method-override');
+
 const session = require('express-session')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
 const bcrypt = require('bcrypt') 
 const MongoStore = require('connect-mongo')
+
+const { S3Client } = require('@aws-sdk/client-s3')
+const multer = require('multer')
+const multerS3 = require('multer-s3')
 require('dotenv').config();
 
 
@@ -56,6 +61,25 @@ passport.deserializeUser(async (user, done) => {
   delete result.password
   process.nextTick(() => {
     return done(null, result)
+  })
+})
+
+// AWS S3 access
+const s3 = new S3Client({
+  region : 'ap-northeast-2',
+  credentials : {
+      accessKeyId : process.env.AWS_ACCESS_KEY,
+      secretAccessKey : process.env.AWS_SECRET_KEY
+  }
+})
+
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.AWS_S3_BUCKET_NAME,
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString() + '.png') //업로드시 파일명 변경가능
+    }
   })
 })
 
@@ -113,7 +137,7 @@ app.get('/write', (req, res) => {
   res.render('write.ejs');
 })
 
-app.post('/add', async (req, res)=>{
+app.post('/add', upload.single('img1'), async (req, res)=>{
   let data = req.body;
 
   if (data.title == '') {
@@ -122,7 +146,7 @@ app.post('/add', async (req, res)=>{
     res.send('내용?');
   } else {
     try {
-      await db.collection('post').insertOne({ title: data.title, content: data.content});
+      await db.collection('post').insertOne({ title: data.title, content: data.content, img: req.file.location});
       await db.collection('post').find().toArray();
       console.log('입력 성공');
       res.redirect('/list');
@@ -138,6 +162,7 @@ app.get('/detail/:id', async (req, res) => {
   try {
     let objId = req.params;
     let result = await db.collection('post').findOne({_id: new ObjectId(objId)})
+    console.log(result);
     if (result == null) {
       응답.status(400).send('그런 글 없음')
     } else {
