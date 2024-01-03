@@ -4,6 +4,25 @@ const { ObjectId, MongoClient } = require('mongodb')
 const methodOverride = require('method-override');
 
 require('dotenv').config();
+
+// 로그인 기능 구현을 위한 셋팅
+const session = require('express-session')
+const passport = require('passport')
+const LocalStrategy = require('passport-local')
+
+app.use(passport.initialize())
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave : false,
+  saveUninitialized : false,
+  // 유효기간 설정
+  cookie: {maxAge: 60 * 60 * 1000 } // 1시간
+}))
+
+app.use(passport.session()) 
+// 여기까지
+
+
 db_key = process.env.MONGODB_PW;
 
 // settings
@@ -143,4 +162,65 @@ app.delete('/delete', async(req, res) => {
     console.log(err);
   }
   
+})
+
+// session 방식
+// 1. 가입 기능
+// 2 로그인 기능
+// 3. 로그인 완료시 세션 만들기
+// 4. 로그인 완료시 유저에게 입장권 보내줌
+// 5. 로그인여부 확인하고 싶으면 입장권 까봄
+// passport 라이브러리 쓰면 쉽게 구현 가능
+
+// passport를 활용하여 user가 제출한 id, 비번이 db와 일치하는지 검사하는 로직
+// passport.authenticate('local')() 쓰면 이 로직이 실행됨
+passport.use(new LocalStrategy(async (input_username, input_password, cb) => {
+  
+  let result = await db.collection('user').findOne({ username : input_username})
+  if (!result) {
+    return cb(null, false, { message: '아이디 DB에 없음' })
+  }
+  if (result.password == input_password) {
+    return cb(null, result)
+  } else {
+    return cb(null, false, { message: '비번불일치' });
+  }
+}))
+
+// session 생성
+passport.serializeUser((user, done) => {
+  process.nextTick(() => {
+    done(null, { id: user._id, username: user.username });
+  })
+})
+
+passport.deserializeUser(async (user, done) => {
+  let result = await db.collection('user').findOne({ _id: new ObjectId(user.id)})
+  delete result.password;
+  process.nextTick(() => {
+    return done(null, result)
+  })
+})
+
+
+app.get('/login', async (req, res) => {
+  console.log(req.user);
+  res.render('login.ejs');
+})
+
+app.post('/login', async (req, res, next) => {
+  passport.authenticate('local', (error, user, info) => {
+    if (error) res.status(500).json(error);
+    if(!user) res.status(401).json(info.message);
+    req.logIn(user, (err) => {
+      if(err) return next(err);
+      res.redirect('/list');
+    })
+  }) (req, res, next)
+})
+
+app.get('/mypage', async (req, res) => {
+  let user_data = req.user;
+  if(user_data) res.render('mypage.ejs', {user: req.user});
+  else res.redirect('/list');
 })
