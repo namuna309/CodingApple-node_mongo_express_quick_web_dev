@@ -29,10 +29,7 @@
                 <script>
                     document.querySelectorAll('.delete')[parseInt('<%= i %>')].addEventListener('click', function (e) {
                         fetch('/delete?id=' + e.target.dataset.id, {
-                            method: 'DELETE',
-                        }).then((r) => r.text()).then((r) => {
-                            console.log(r);
-                            e.target.parentElement.parentElement.style.display = 'none';
+                            method : 'DELETE',
                         })
                     })
         
