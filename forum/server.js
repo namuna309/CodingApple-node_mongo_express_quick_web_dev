@@ -3,6 +3,12 @@ const app = express()
 const { ObjectId, MongoClient } = require('mongodb') 
 const methodOverride = require('method-override');
 
+//해싱
+const bcrypt = require('bcrypt');
+
+// session db에 저장
+const MongoStore = require("connect-mongo");
+
 require('dotenv').config();
 
 // 로그인 기능 구현을 위한 셋팅
@@ -16,7 +22,12 @@ app.use(session({
   resave : false,
   saveUninitialized : false,
   // 유효기간 설정
-  cookie: {maxAge: 60 * 60 * 1000 } // 1시간
+  cookie: {maxAge: 60 * 60 * 1000 }, // 1시간,
+  // session db에 저장
+  store: MongoStore.create({
+    mongoUrl: `mongodb+srv://nyah309:${process.env.MONGODB_PW}@cluster0.emzshpb.mongodb.net/?retryWrites=true&w=majority`,
+    dbName: 'forum'
+  })
 }))
 
 app.use(passport.session()) 
@@ -180,7 +191,9 @@ passport.use(new LocalStrategy(async (input_username, input_password, cb) => {
   if (!result) {
     return cb(null, false, { message: '아이디 DB에 없음' })
   }
-  if (result.password == input_password) {
+
+ 
+  if ( await bcrypt.compare(input_password, result.password)) { 
     return cb(null, result)
   } else {
     return cb(null, false, { message: '비번불일치' });
@@ -223,4 +236,17 @@ app.get('/mypage', async (req, res) => {
   let user_data = req.user;
   if(user_data) res.render('mypage.ejs', {user: req.user});
   else res.redirect('/list');
+})
+
+
+// 회원 가입
+app.get('/register', (req, res) => {
+  res.render('register.ejs');
+})
+
+app.post('/register', async (req, res) => {
+  let hashedPW = await bcrypt.hash(req.body.password, 10);
+
+  await db.collection('user').insertOne({username: req.body.username, password: hashedPW});
+  res.redirect('/list');
 })
