@@ -35,31 +35,12 @@
                             e.target.parentElement.parentElement.style.display = 'none';
                         })
                     })
-
-                    document.querySelector('.search-send').addEventListener('click', function () {
-                        let searchTxt = document.querySelector('.search').value
-                        location.href = '/search?val=' + searchTxt
-                    })
-                </script>
-                <% } %>
-                    <a href="/list/next/<%= post[post.length - 1]._id %>">다음</a>
-
-        </div>
-
-        <script>
-            let eventSource = new EventSource('/stream/list');
-            eventSource.addEventListener('msg', (e) => {
-                console.log(e.data);
-                let d = JSON.parse(e.data)
-                document.querySelector('.white-bg').insertAdjacentHTML('afterbegin', `<div class="list-box">
-                        <h4>
-                            ${d.title}
-                        </h4>
-                    </a>
-                    
-                </div>`)
-            })
-        </script>
+        
+              </script>
+        <% } %>
+        
+        
+      </div> 
 </body>
 
 </html>
