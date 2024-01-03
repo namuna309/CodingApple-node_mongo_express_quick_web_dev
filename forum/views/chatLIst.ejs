@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/index.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <%- include('nav.ejs') %>
+        <input class="search">
+        <button class="search-send">검색</button>
+        <div class="white-bg">
+            <% for (let i = 0; i < list.length; i++){ %>
+              <div class="list-box">
+                <h4>
+                  <a>채팅방제목</a>
+                </h4>
+                <p>채팅방설명~~</p>
+              </div>
+            <% } %>
+        </div> 
+</body>
+
+</html>

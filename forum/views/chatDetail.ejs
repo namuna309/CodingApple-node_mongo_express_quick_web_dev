@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/index.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <%- include('nav.ejs') %>
+        <input class="search">
+        <button class="search-send">검색</button>
+        <h4>나의 채팅방 목록 </h4>
+        <div class="white-bg">
+            <% for (let i=0; i < 글목록.length; i++){ %>
+                <div class="list-box">
+                    <h4>
+                        <a href="/chat/detail/<%= 글목록[i]._id %>">
+                            채팅방 <%= i %>
+                        </a>
+                    </h4>
+                    <p>
+                        <%= 글목록[i]._id %>
+                    </p>
+                </div>
+                <% } %>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/socket.io@4.7.2/client-dist/socket.io.min.js"></script>
+        <script>
+            // 웹소켓 연결
+            const socket = io() 
+        </script>
+</body>
+
+</html>
