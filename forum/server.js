@@ -227,11 +227,11 @@ app.post('/abc', async (req, res) => {
 app.delete('/delete', async (req, res) => {
   let post = req.query.id;
   console.log(post);
-  try {
-    await db.collection('post').deleteOne({ _id: new ObjectId(post) });
+  try{
+    await db.collection('post').deleteOne({_id: new ObjectId(post)});
     console.log('삭제 완료')
     res.send('삭제 완료');
-  } catch (err) {
+  } catch(err) {
     console.log(err);
   }
 
