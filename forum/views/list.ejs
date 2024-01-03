@@ -1,36 +1,31 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <link rel="stylesheet" href="/index.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-
 <body>
     <%- include('nav.ejs') %>
-        <input class="search">
-        <button class="search-send">검색</button>
-        <div class="white-bg">
-            <%for (let i=0; i < post.length; i++) { %>
-                <div class="list-box">
-                    <a href="/detail/<%= post[i]._id %>">
-                        <h4>
-                            <%= post[i].title %>
-                                <a href="/edit/<%= post[i]._id %>">✏️</a>
-                                <span class="delete" data-id="<%= post[i]._id %>">🗑️</span>
-                        </h4>
+    <div class="white-bg">
+        <%for (let i = 0; i < post.length; i++) { %>
+            <div class="list-box">
+                <a href="/detail/<%= post[i]._id %>">
+                    <h4><%= post[i].title %>
+                        <a href="/edit/<%= post[i]._id %>">✏️</a>
+                        <span class="delete" data-id="<%= post[i]._id %>">🗑️</span></h4>
                     </a>
-                    <p>
-                        <%= post[i].content %>
-                    </p>
-                </div>
-                <script>
-                    document.querySelectorAll('.delete')[parseInt('<%= i %>')].addEventListener('click', function (e) {
+                <p><%= post[i].content %></p>
+              </div>
+              <script>
+                document.querySelectorAll('.delete')[parseInt('<%= i %>')].addEventListener('click', function(e) {
                         fetch('/delete?id=' + e.target.dataset.id, {
                             method : 'DELETE',
-                        })
+                        }).then((r) => r.text()).then((r) => { 
+                            console.log(r);
+                            e.target.parentElement.parentElement.style.display = 'none';
+                         })
                     })
         
               </script>
@@ -39,5 +34,4 @@
         
       </div> 
 </body>
-
 </html>
